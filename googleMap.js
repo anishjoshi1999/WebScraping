@@ -102,6 +102,8 @@ async function searchGoogleMaps(cityName, stateName) {
         address: firstOfLast?.text()?.split("·")?.[1]?.trim(),
         phone: lastOfLast?.text()?.split("·")?.[1]?.trim(),
         Website: website,
+        cityName: cityName,
+        stateName: stateName,
       };
       console.log(business);
       businesses.push(business);
@@ -127,7 +129,7 @@ let citiesNewSouthWales = [
   // "Tweed Heads",
   // "Coffs Harbour",
   // "Wagga Wagga",
-  // "Albury",
+  //"Albury",
   // "Port Macquarie",
   // "Tamworth",
   // "Dubbo",
