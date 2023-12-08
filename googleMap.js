@@ -4,7 +4,7 @@ const stealthPlugin = require("puppeteer-extra-plugin-stealth");
 const fs = require("fs");
 const { arrayToCSV } = require("./googleMaptoCSV");
 
-async function searchGoogleMaps() {
+async function searchGoogleMaps(cityName, stateName) {
   try {
     const start = Date.now();
 
@@ -18,7 +18,7 @@ async function searchGoogleMaps() {
 
     const page = await browser.newPage();
 
-    const query = "20 Pharmacies in New South Wales australia";
+    const query = `Pharmacies in ${cityName} ${stateName} australia`;
 
     try {
       await page.goto(
@@ -112,10 +112,84 @@ async function searchGoogleMaps() {
     // Convert the array of objects to CSV
     const csvString = arrayToCSV(businesses);
     // Save the CSV string to a file
-    fs.writeFileSync("output.csv", csvString);
+    fs.writeFileSync(`output${cityName}_${stateName}.csv`, csvString);
   } catch (error) {
     console.log("error at googleMaps", error.message);
   }
 }
-
-let value = searchGoogleMaps();
+let citiesNewSouthWales = [
+  // "Sydney",
+  // "Newcastle",
+  // "Central Coast",
+  // "Wollongong",
+  // "Maitland",
+  // "Blue Mountains",
+  // "Tweed Heads",
+  // "Coffs Harbour",
+  // "Wagga Wagga",
+  // "Albury",
+  // "Port Macquarie",
+  // "Tamworth",
+  // "Dubbo",
+  // "Orange",
+  // "Nowra - Bomaderry",
+  // "Queanbeyan",
+  // "Bathurst",
+  // "Lismore",
+  // "Bowral - Mittagong",
+  // "Armidale",
+  // "Goulburn",
+  // "Cessnock",
+  // "Nelson Bay",
+  // "Kurri Kurri",
+  // "Forster - Tuncurry",
+  // "Griffith",
+  // "Grafton",
+  // "Ballina",
+  // "Morisset - Cooranbong",
+  // "Broken Hill",
+  // "Batemans Bay",
+  // "Ulladulla",
+  // "Singleton",
+  // "Taree",
+  // "Kempsey",
+  // "St Georges Basin - Sanctuary Point",
+  // "Kiama",
+  // "Raymond Terrace",
+  // "Mudgee",
+  // "Lithgow",
+  // "Muswellbrook",
+  // "Inverell",
+  // "Merimbula",
+  // "Parkes",
+  // "Casino",
+  // "Byron Bay",
+  // "Young",
+  // "Gunnedah",
+  // "Cowra",
+  // "Murwillumbah",
+  // "Moss Vale",
+  // "Leeton",
+  // "Moree",
+  // "Forbes",
+  // "Lennox Head",
+  // "Deniliquin",
+  // "Narrabri",
+  // "Moama",
+  // "Cootamundra",
+  // "Yass",
+  // "Cooma",
+  // "Nambucca Heads",
+  // "Tumut",
+  // "Wauchope",
+  // "Yamba",
+  // "Glen Innes",
+  // "Woolgoolga",
+  // "Alstonville",
+  // "Wingham",
+  // "South West Rocks",
+];
+for (let i = 0; i < citiesNewSouthWales.length; i++) {
+  searchGoogleMaps(citiesNewSouthWales[i], "New South Wales");
+}
+// let value = searchGoogleMaps();
