@@ -76,7 +76,7 @@ let info = [
   },
   {
     stateName: "Victoria",
-    cities: [
+    citiesName: [
       "Whittlesea",
       "Melbourne",
       "Geelong",
@@ -135,7 +135,7 @@ let info = [
   },
   {
     stateName: "Queensland ",
-    cities: [
+    citiesName: [
       "Brisbane",
       "Gold Coast",
       "Sunshine Coast",
@@ -308,7 +308,7 @@ let info = [
   },
   {
     stateName: "Western Australia",
-    cities: [
+    citiesName: [
       "Perth",
       "Bunbury",
       "Geraldton",
@@ -368,7 +368,7 @@ let info = [
   },
   {
     stateName: "South Australia",
-    cities: [
+    citiesName: [
       "Adelaide",
       "Gawler",
       "Mount Gambier",
@@ -545,7 +545,7 @@ let info = [
   },
   {
     stateName: "Tasmania",
-    cities: [
+    citiesName: [
       "Hobart",
       "Launceston",
       "Devonport",
@@ -598,3 +598,4 @@ let info = [
     ],
   },
 ];
+module.exports = info;

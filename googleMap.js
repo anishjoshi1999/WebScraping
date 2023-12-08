@@ -3,6 +3,7 @@ const puppeteerExtra = require("puppeteer-extra");
 const stealthPlugin = require("puppeteer-extra-plugin-stealth");
 const fs = require("fs");
 const { arrayToCSV } = require("./googleMaptoCSV");
+const info = require("./index");
 
 async function searchGoogleMaps(cityName, stateName) {
   try {
@@ -120,11 +121,11 @@ async function searchGoogleMaps(cityName, stateName) {
   }
 }
 let citiesNewSouthWales = [
-  // "Sydney",
-  // "Newcastle",
-  // "Central Coast",
-  // "Wollongong",
-  // "Maitland",
+  "Sydney",
+  "Newcastle",
+  "Central Coast",
+  "Wollongong",
+  "Maitland",
   // "Blue Mountains",
   // "Tweed Heads",
   // "Coffs Harbour",
@@ -191,7 +192,14 @@ let citiesNewSouthWales = [
   // "Wingham",
   // "South West Rocks",
 ];
-for (let i = 0; i < citiesNewSouthWales.length; i++) {
-  searchGoogleMaps(citiesNewSouthWales[i], "New South Wales");
+console.log(info[0].stateName);
+console.log(info[0].citiesName);
+async function runCities() {
+  for (let j = 0; j < info.length; j++) {
+    for (let i = 0; i < info[j].citiesName.length; i++) {
+      console.log(info[j].citiesName[i], `${info[j].stateName}`);
+      // await searchGoogleMaps(info[j].citiesName[i], `${info[j].stateName}`);
+    }
+  }
 }
-// let value = searchGoogleMaps();
+runCities();
