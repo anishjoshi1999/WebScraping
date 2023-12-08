@@ -1,7 +1,8 @@
-var cheerio = require("cheerio");
-var puppeteerExtra = require("puppeteer-extra");
-var stealthPlugin = require("puppeteer-extra-plugin-stealth");
-var chromium = require("@sparticuz/chromium");
+const cheerio = require("cheerio");
+const puppeteerExtra = require("puppeteer-extra");
+const stealthPlugin = require("puppeteer-extra-plugin-stealth");
+const fs = require("fs");
+const { arrayToCSV } = require("./googleMaptoCSV");
 
 async function searchGoogleMaps() {
   try {
@@ -11,22 +12,13 @@ async function searchGoogleMaps() {
 
     const browser = await puppeteerExtra.launch({
       headless: false,
-      // headless: "new",
-      // devtools: true,
+      args: ["--lang=en-US,en"],
       executablePath: "", // your path here
     });
 
-    // const browser = await puppeteerExtra.launch({
-    //   args: chromium.args,
-    //   defaultViewport: chromium.defaultViewport,
-    //   executablePath: await chromium.executablePath(),
-    //   headless: "new",
-    //   ignoreHTTPSErrors: true,
-    // });
-
     const page = await browser.newPage();
 
-    const query = "Computer Shop near Dhangadhi";
+    const query = "20 Pharmacies in New South Wales australia";
 
     try {
       await page.goto(
@@ -54,14 +46,11 @@ async function searchGoogleMaps() {
               totalHeight = 0;
               await new Promise((resolve) => setTimeout(resolve, scrollDelay));
 
-              // Calculate scrollHeight after waiting
               var scrollHeightAfter = wrapper.scrollHeight;
 
               if (scrollHeightAfter > scrollHeightBefore) {
-                // More content loaded, keep scrolling
                 return;
               } else {
-                // No more content loaded, stop scrolling
                 clearInterval(timer);
                 resolve();
               }
@@ -80,10 +69,10 @@ async function searchGoogleMaps() {
     await browser.close();
     console.log("browser closed");
 
-    // get all a tag parent where a tag href includes /maps/place/
     const $ = cheerio.load(html);
     const aTags = $("a");
     const parents = [];
+
     aTags.each((i, el) => {
       const href = $(el).attr("href");
       if (!href) {
@@ -96,55 +85,37 @@ async function searchGoogleMaps() {
 
     console.log("parents", parents.length);
 
-    const buisnesses = [];
+    const businesses = [];
 
     parents.forEach((parent) => {
       const url = parent.find("a").attr("href");
-      // get a tag where data-value="Website"
-      const website = parent.find('a[data-value="Website"]').attr("href");
-      // find a div that includes the class fontHeadlineSmall
       const storeName = parent.find("div.fontHeadlineSmall").text();
-      // find span that includes class fontBodyMedium
-      const ratingText = parent
-        .find("span.fontBodyMedium > span")
-        .attr("aria-label");
-
-      // get the first div that includes the class fontBodyMedium
       const bodyDiv = parent.find("div.fontBodyMedium").first();
       const children = bodyDiv.children();
       const lastChild = children.last();
       const firstOfLast = lastChild.children().first();
       const lastOfLast = lastChild.children().last();
-      let business = {
-        placeId: `ChI${url?.split("?")?.[0]?.split("ChI")?.[1]}`,
-        address: firstOfLast?.text()?.split("·")?.[1]?.trim(),
-        category: firstOfLast?.text()?.split("·")?.[0]?.trim(),
-        phone: lastOfLast?.text()?.split("·")?.[1]?.trim(),
-        googleUrl: url,
-        bizWebsite: website,
-        storeName,
-        ratingText,
-        stars: ratingText?.split("stars")?.[0]?.trim()
-          ? Number(ratingText?.split("stars")?.[0]?.trim())
-          : null,
-        numberOfReviews: ratingText
-          ?.split("stars")?.[1]
-          ?.replace("Reviews", "")
-          ?.trim()
-          ? Number(
-              ratingText?.split("stars")?.[1]?.replace("Reviews", "")?.trim()
-            )
-          : null,
-      };
-      buisnesses.push(business);
-    });
-    const end = Date.now();
+      const website = parent.find(".S9kvJb").attr("href");
 
+      let business = {
+        storeName,
+        address: firstOfLast?.text()?.split("·")?.[1]?.trim(),
+        phone: lastOfLast?.text()?.split("·")?.[1]?.trim(),
+        Website: website,
+      };
+      console.log(business);
+      businesses.push(business);
+    });
+
+    const end = Date.now();
     console.log(`time in seconds ${Math.floor((end - start) / 1000)}`);
-    return buisnesses;
+    // Convert the array of objects to CSV
+    const csvString = arrayToCSV(businesses);
+    // Save the CSV string to a file
+    fs.writeFileSync("output.csv", csvString);
   } catch (error) {
     console.log("error at googleMaps", error.message);
   }
 }
+
 let value = searchGoogleMaps();
-console.log(value);
