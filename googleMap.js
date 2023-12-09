@@ -12,7 +12,7 @@ async function searchGoogleMaps(cityName, stateName) {
     puppeteerExtra.use(stealthPlugin());
 
     const browser = await puppeteerExtra.launch({
-      headless: false,
+      headless: "new",
       args: ["--lang=en-US,en"],
       executablePath: "", // your path here
     });
@@ -127,7 +127,7 @@ async function runCities() {
   for (let j = 0; j < info.length; j++) {
     for (let i = 0; i < info[j].citiesName.length; i++) {
       console.log(info[j].citiesName[i], `${info[j].stateName}`);
-      // await searchGoogleMaps(info[j].citiesName[i], `${info[j].stateName}`);
+      await searchGoogleMaps(info[j].citiesName[i], `${info[j].stateName}`);
     }
   }
 }
