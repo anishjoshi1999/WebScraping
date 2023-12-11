@@ -1,131 +1,46 @@
-//Pass value in this code
-let info = [
-  {
-    stateName: "Northern Territory",
-    citiesName: [
-      "Darwin",
-      "Alice Springs",
-      "Katherine",
-      "Nhulunbuy",
-      "Tennant Creek",
-      "Galiwinku",
-      "Wadeye",
-      "Wurrumiyanga (Nguiu)",
-      "Gunbalanya (Oenpelli)",
-      "Milingimbi",
-      "Ngukurr",
-      "Angurugu",
-      "Yulara",
-      "Ramingining",
-      "Jabiru",
-      "Borroloola",
-      "Alyangula",
-      "Yuendumu",
-      "Gapuwiyak",
-      "Humpty Doo",
-      "Yirrkala",
-      "Lajamanu",
-      "Minyerri",
-      "Santa Teresa (Ltyentye Purte)",
-      "Daguragu – Kalkarindji",
-      "Howard Springs",
-      "Hermannsburg",
-      "Wugular (Beswick)",
-      "Ampilatwatja",
-      "Papunya",
-      "Warruwi",
-      "Ilparpa",
-      "Wagait Beach – Mandorah",
-      "Walungurru (Kintore)",
-      "Umbakumba",
-      "Milikapiti",
-      "Ali Curung",
-      "Kaltukatjara (Docker River)",
-      "Batchelor",
-      "Nganmarriyanga (Palumpa)",
-      "Alpurrurulam",
-      "Nauiyu Nambiyu (Daly River)",
-      "Barunga",
-      "Mataranka",
-      "Pine Creek",
-      "Pirlangimpi",
-      "Mutitjulu",
-      "Elliot",
-      "Yarralin",
-      "Timber Creek",
-      "Minjilang",
-      "Jilkminggan",
-      "Bulman – Weemol",
-      "Nyirripi",
-      "Adelaide River",
-      "Gunyangara",
-      "Binjari",
-      "Areyonga",
-      "Amoonguna",
-      "Willowra",
-      "Atitjere",
-      "Titjikala",
-      "Aputula (Finke)",
-      "Laramba",
-      "Robinson River (Mungoorbada)",
-      "Yuelamu",
-      "Canteen Creek",
-      "Wutunugurra",
-    ],
-  },
-  {
-    stateName: "Australian Capital Territory",
-    citiesName: [
-      "Belconnen",
-      "Boboyan",
-      "Booroomba",
-      "Brayshaw",
-      "Camberra",
-      "Canberra",
-      "Canberrah",
-      "Christian Minde",
-      "Cotter",
-      "Cotter Hut",
-      "Cuppacumbalong",
-      "Duntroon",
-      "Fyshwick",
-      "Gibraltar",
-      "Ginninderra",
-      "Gudgenby",
-      "Gungahha",
-      "Gungahlin",
-      "Hall",
-      "Harman",
-      "Jervis Bay",
-      "Jervis Bay Territorium",
-      "Jervis Bay Territory",
-      "Kamberra",
-      "Kambra",
-      "Kanbera",
-      "Kanbero",
-      "Kanberr",
-      "Kanbérra",
-      "Khâm-phì-là",
-      "Kowen",
-      "Lanyon",
-      "Majura",
-      "Molonglo",
-      "Orroral",
-      "Teritórium Jervis Bay",
-      "Territoire de la baie de Jarvis",
-      "Territorio de Jervis Bay",
-      "Território da Baía Jervis",
-      "Terytorium Jervis Bay",
-      "Tharwa",
-      "Tidbinbilla",
-      "Tuggeranong",
-      "Urayarra",
-      "Uriarra",
-      "Weetangerra",
-      "Weston",
-      "Weston Creek",
-      "Woden",
-    ],
-  },
-];
-module.exports = info;
+const XLSX = require("xlsx");
+const fs = require("fs");
+const { processWebsite } = require("./scraping");
+
+// Specify the path to your XLSX file
+const filePath = "./myfile.xlsx";
+
+// Read the XLSX file
+const workbook = XLSX.readFile(filePath);
+
+(async () => {
+  async function processSheet(sheetIndex) {
+    let sheetName = workbook.SheetNames[sheetIndex];
+    const sheet = workbook.Sheets[sheetName];
+
+    // Convert the sheet data to JSON
+    const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+    for (let j = 0; j < jsonData.length; j++) {
+      const Name = jsonData[j].Name;
+      const Website = jsonData[j].Website;
+
+      try {
+        const Email = await processWebsite(Website);
+        jsonData[j].Email = Email;
+        // Now you can do whatever you want with the data
+        console.log(`Email: ${Email}`);
+        // Update the XLSX file with the modified data
+        const updatedSheet = XLSX.utils.json_to_sheet(jsonData);
+        workbook.Sheets[sheetName] = updatedSheet;
+        XLSX.writeFile(workbook, filePath);
+        console.log(`${j + 1} Record updated successfully`);
+      } catch (error) {
+        console.error(`Error processing data for URL: ${Website}`, error);
+        // If an error occurs, you may choose to handle it here
+        // For example, you could log the error, skip this record, or perform other actions
+      }
+    }
+
+    console.log(`Scraping for sheet ${sheetName} successful`);
+  }
+
+  for (let i = 7; i < 8; i++) {
+    await processSheet(i);
+  }
+})();
