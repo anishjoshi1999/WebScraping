@@ -9,7 +9,7 @@ async function searchGoogle(Name, Address) {
     puppeteerExtra.use(stealthPlugin());
 
     const browser = await puppeteerExtra.launch({
-      headless: false,
+      headless: "new",
       args: ["--lang=en-US,en"],
       executablePath: "", // your path here
     });

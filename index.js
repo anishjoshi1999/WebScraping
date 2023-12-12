@@ -40,7 +40,7 @@ const workbook = XLSX.readFile(filePath);
     console.log(`Scraping for sheet ${sheetName} successful`);
   }
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 4; i++) {
     await processSheet(i);
   }
 })();
